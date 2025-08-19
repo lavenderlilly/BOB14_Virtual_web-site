@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이메일 인증 - BCS Mobile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='verify.css') }}">
+</head>
+<body>
+    <!-- Main Verify Container -->
+    <div class="verify-container">
+        <div class="verify-box">
+            <!-- Logo and Title -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="display: inline-flex; items-center; gap: 8px; margin-bottom: 20px;">
+                    <div style="width: 32px; height: 32px; !important;  background-color: #008000; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; !important;  font-weight: bold; font-size: 16px;">B</span>
+                    </div>
+                    <span style="font-size: 20px; font-weight: 600; color: #333;">BCS Mobile</span>
+                </div>
+            </div>
+            
+            <h1 class="verify-title">이메일 인증</h1>
+            <p class="verify-subtitle">
+                가입하신 이메일 주소를 입력해주세요.<br>
+                인증코드가 발송됩니다.
+            </p>
+            
+            <!-- Verify Form -->
+            <form id="verifyForm" method="post" action="verify">
+                <div class="form-group">
+                    <input 
+                        type="email" 
+                        id="userEmail" 
+                        class="form-input"
+			name="email" 
+                        placeholder="이메일 주소를 입력하세요"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" id="verifyBtn" class="verify-btn">인증 이메일 보내기</button>
+            </form>
+            
+            <!-- Back Link -->
+            <div class="back-link">
+                <a href="/login">← 로그인으로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <!-- Top Heart icon -->
+            <button class="sidebar-btn active" data-action="favorite">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+            </button>
+            
+            <!-- Menu items -->
+            <button class="sidebar-btn" data-action="chat">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                <span>채팅상담</span>
+            </button>
+            
+            <button class="sidebar-btn" data-action="support">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+                <span>고객센터</span>
+            </button>
+            
+            <button class="sidebar-btn" data-action="store">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <span>매장찾기</span>
+            </button>
+            
+            <button class="sidebar-btn" data-action="card">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-4 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>카드혜택</span>
+            </button>
+            
+            <button class="sidebar-btn" data-action="event">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span>이벤트</span>
+            </button>
+            
+            <!-- Up arrow -->
+            <button class="sidebar-btn" data-action="top">
+                <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+            </button>
+            
+            <!-- Bottom text -->
+            <div class="sidebar-text-vertical">
+                <span>최신 휴대폰</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <svg class="footer-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <div>
+                    <div class="footer-brand">고객센터</div>
+                    <div>전국 02-000-0000 (평일 09:00 ~ 18:00/점심시간 12:00~)</div>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <div class="footer-brand">KT</div>
+                <div>1588-0000 휴대 | 080-880-0000 휴대</div>
+            </div>
+            
+            <div class="footer-section">
+                <div class="footer-brand">LG U+</div>
+                <div>1688-0000 휴대 | 080-880-0000 휴대</div>
+            </div>
+            
+            <div class="footer-section">
+                <div class="footer-brand">SKT</div>
+                <div>1666-0000 휴대 | 080 800 1001 유선</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

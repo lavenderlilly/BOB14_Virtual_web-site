@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알뜰폰 개통 - 본인인증</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-4xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">A</span>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800">알뜰폰 개통</h1>
+                </div>
+                <div class="text-sm text-gray-500">
+                    <span id="currentStep">1</span>/2 단계
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 진행률 바 -->
+    <div class="bg-white border-b">
+        <div class="max-w-4xl mx-auto px-4 py-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 50%"></div>
+            </div>
+            <div class="flex justify-between mt-2 text-xs text-gray-600">
+                <span>실명확인</span>
+                <span>본인인증</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- 1단계: 실명확인 -->
+        <div id="step1" class="bg-white rounded-lg shadow-sm border p-6">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">실명확인</h2>
+                <p class="text-gray-600">개통을 위해 실명확인을 진행합니다.</p>
+            </div>
+
+            <form id="realnameForm" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">이름</label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="홍길동">
+                    </div>
+                    <div>
+                        <label for="rrn" class="block text-sm font-medium text-gray-700 mb-2">주민등록번호</label>
+                        <input type="text" id="rrn" name="rrn" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="000000-0000000" maxlength="14">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                    실명확인 진행
+                </button>
+            </form>
+        </div>
+
+        <!-- 2단계: 본인인증 -->
+        <div id="step2" class="bg-white rounded-lg shadow-sm border p-6 hidden">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">본인인증</h2>
+                <p class="text-gray-600">간편 본인인증을 통해 개통을 완료합니다.</p>
+            </div>
+
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">실명확인 완료</p>
+                        <p class="text-sm text-gray-600" id="verifiedName">김철수</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-lg font-medium text-gray-800 mb-4">인증 방법 선택</h3>
+                
+                <div class="grid gap-4">
+                    <button onclick="startAuth('pass')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                            <span class="text-red-600 font-bold text-lg">P</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-medium text-gray-800">PASS</p>
+                            <p class="text-sm text-gray-600">공동인증서 기반 간편인증</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+
+                    <button onclick="startAuth('kakao')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                            <span class="text-yellow-600 font-bold text-lg">K</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-medium text-gray-800">카카오</p>
+                            <p class="text-sm text-gray-600">카카오톡 간편인증</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+
+                    <button onclick="startAuth('naver')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <span class="text-green-600 font-bold text-lg">N</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-medium text-gray-800">네이버</p>
+                            <p class="text-sm text-gray-600">네이버 간편인증</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3단계: 완료 -->
+        <div id="step3" class="bg-white rounded-lg shadow-sm border p-6 hidden">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">개통 완료!</h2>
+                <p class="text-gray-600 mb-6">본인인증이 성공적으로 완료되었습니다.</p>
+                
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div class="text-sm text-green-800">
+                            <p class="font-medium">휴대폰 개통이 완료되었습니다.</p>
+                            <p>곧 문자메시지로 개통 확인 안내를 받으실 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" 
+                        class="bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                    다시 시작
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentSid = null;
+
+        // 주민번호 자동 하이픈 추가
+        document.getElementById('rrn').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length >= 6) {
+                value = value.substring(0, 6) + '-' + value.substring(6);
+            }
+            e.target.value = value;
+        });
+
+        // 1단계: 실명확인
+        document.getElementById('realnameForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const rrn = document.getElementById('rrn').value;
+            
+            if (!name || !rrn) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/step1/realname', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, rrn })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    currentSid = result.sid;
+                    document.getElementById('verifiedName').textContent = name;
+                    showStep(2);
+                } else {
+                    alert('실명확인에 실패했습니다: ' + result.error);
+                }
+            } catch (error) {
+                alert('오류가 발생했습니다: ' + error.message);
+            }
+        });
+
+        // 2단계: 본인인증 시작
+        async function startAuth(provider) {
+            if (!currentSid) {
+                alert('실명확인을 먼저 완료해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/step2/init', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sid: currentSid })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const state = result.auth_url.split('state=')[1];
+                    
+                    // Mock IDP 페이지로 이동
+                    window.open(`/mock_idp_auth?request_id=${result.request_id}&state=${state}`, '_blank', 'width=500,height=600');
+                    
+                    // 인증 완료 확인
+                    checkAuthStatus();
+                } else {
+                    alert('인증 초기화에 실패했습니다: ' + result.error);
+                }
+            } catch (error) {
+                alert('오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        // 인증 상태 확인
+        function checkAuthStatus() {
+            const checkInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/finalize', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ sid: currentSid })
+                    });
+
+                    if (response.ok) {
+                        clearInterval(checkInterval);
+                        showStep(3);
+                    }
+                } catch (error) {
+                    // 에러 무시 (아직 인증 중)
+                }
+            }, 2000);
+
+            // 30초 후 타임아웃
+            setTimeout(() => {
+                clearInterval(checkInterval);
+            }, 30000);
+        }
+
+        function showStep(step) {
+            // 모든 단계 숨기기
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            
+            // 현재 단계 보이기
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            
+            // 진행률 업데이트
+            document.getElementById('currentStep').textContent = step;
+            const progressBar = document.getElementById('progressBar');
+            if (step === 1) {
+                progressBar.style.width = '50%';
+            } else if (step === 2) {
+                progressBar.style.width = '100%';
+            } else {
+                progressBar.style.width = '100%';
+            }
+        }
+    </script>
+</body>
+</html>

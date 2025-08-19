@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1단계 실명확인 - BCS Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="flex items-center justify-center">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    1단계 실명확인
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    휴대폰 개통을 위한 실명확인을 진행합니다
+                </p>
+            </div>
+            
+            <div class="bg-white py-8 px-6 shadow rounded-lg">
+                <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                🚨 파라미터 변조 취약점 시뮬레이션
+                            </h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <p>이 페이지는 <strong>실제 알뜰폰 개통 사이트</strong>에서 발견된 보안 취약점을 시뮬레이션합니다.</p>
+                                <p class="mt-1"><strong>시나리오:</strong> 1단계 성공 여부만 플래그로 저장하고, 2단계에서 BurpSuite로 파라미터를 변조하여 타인 정보로 인증하는 과정을 시뮬레이션합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form class="space-y-6" id="step1Form">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">
+                            실명
+                        </label>
+                        <input type="text" name="name" id="name" required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="김철수">
+                    </div>
+                    
+                    <div>
+                        <label for="resident_number" class="block text-sm font-medium text-gray-700">
+                            주민등록번호
+                        </label>
+                        <input type="text" name="resident_number" id="resident_number" required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="900101-1234567">
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700">
+                            연락처
+                        </label>
+                        <input type="text" name="phone" id="phone" required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="010-1234-5678">
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-blue-800">
+                                    시뮬레이션 가이드
+                                </h3>
+                                <div class="mt-2 text-sm text-blue-700">
+                                    <p><strong>1단계 실명확인:</strong> 김철수, 900101-1234567, 010-1234-5678</p>
+                                    <p><strong>2단계 본인인증:</strong> BurpSuite로 파라미터 변조하여 타인 정보로 인증</p>
+                                    <p class="mt-1 text-xs">→ 해커가 타인 명의로 스마트폰 개통하여 범죄에 악용</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" 
+                                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            실명확인 완료
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6">
+                    <a href="/" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        홈으로 돌아가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('step1Form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                resident_number: formData.get('resident_number'),
+                phone: formData.get('phone')
+            };
+            
+            try {
+                const response = await fetch('/step1_verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    console.log('1단계 인증 성공:', result);
+                    // 성공 메시지 표시
+                    alert('실명확인이 성공적으로 완료되었습니다!');
+                    // 2단계로 리다이렉트
+                    window.location.href = '/step2_verification';
+                } else {
+                    alert('오류: ' + (result.error || '알 수 없는 오류가 발생했습니다.'));
+                }
+            } catch (error) {
+                console.error('오류:', error);
+                alert('오류: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

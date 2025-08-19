@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보안 2단계 인증 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- 헤더 -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">🔒 보안 2단계 인증 시스템</h1>
+                <p class="text-gray-600">시니어 보안 엔지니어가 구현한 안전한 인증 시스템</p>
+            </div>
+
+            <!-- 보안 요구사항 -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-blue-800 mb-4">🛡️ 보안 요구사항</h2>
+                <div class="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+                    <div>
+                        <h3 class="font-medium mb-2">1단계: 실명확인</h3>
+                        <ul class="space-y-1">
+                            <li>• 사용자 A의 이름·주민번호 검증</li>
+                            <li>• 서버 세션에 A의 해시값 저장</li>
+                            <li>• 클라이언트에는 sid만 반환</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-medium mb-2">2단계: 외부 인증</h3>
+                        <ul class="space-y-1">
+                            <li>• 외부 인증기관(IdP) 응답 검증</li>
+                            <li>• 서명 검증 및 nonce/state 검증</li>
+                            <li>• 1단계 A와 2단계 C 일치성 검증</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 테스트 시나리오 -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-yellow-800 mb-4">🧪 테스트 시나리오</h2>
+                <div class="space-y-3 text-sm text-yellow-700">
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">T1</span>
+                        <div>
+                            <strong>성공 케이스:</strong> 1단계 김철수 → 2단계 김철수 → 성공
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">T2</span>
+                        <div>
+                            <strong>실패 케이스:</strong> 1단계 김철수 → 2단계 이영희 → USER_MISMATCH 실패 (보안 강화됨)
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">T3</span>
+                        <div>
+                            <strong>보안 검증:</strong> State/Nonce 변조, 잘못된 서명, JTI 재사용 등 → 실패
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1단계: 실명확인 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">1단계: 실명확인</h2>
+                <form id="step1Form" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                            <input type="text" id="name" name="name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="김철수">
+                        </div>
+                        <div>
+                            <label for="rrn" class="block text-sm font-medium text-gray-700 mb-1">주민등록번호</label>
+                            <input type="text" id="rrn" name="rrn" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="900101-1234567">
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="fillUserA()" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            사용자 A (김철수)
+                        </button>
+                        <button type="button" onclick="fillUserC()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            사용자 C (이영희)
+                        </button>
+                    </div>
+                    <button type="submit" 
+                            class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        실명확인 진행
+                    </button>
+                </form>
+                <div id="step1Result" class="mt-4 hidden"></div>
+            </div>
+
+            <!-- 2단계: 외부 인증 -->
+            <div id="step2Section" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">2단계: 외부 인증</h2>
+                <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-700 mb-2">📋 세션 정보</h3>
+                    <div class="text-sm text-gray-600">
+                        <p><strong>SID:</strong> <span id="sessionSid"></span></p>
+                        <p><strong>Request ID:</strong> <span id="requestId"></span></p>
+                    </div>
+                </div>
+                <button id="startStep2" 
+                        class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    외부 인증 시작 (Mock IDP)
+                </button>
+                <div id="step2Result" class="mt-4 hidden"></div>
+            </div>
+
+            <!-- 최종 완료 -->
+            <div id="finalizeSection" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">최종 완료</h2>
+                <button id="finalizeBtn" 
+                        class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    최종 인증 완료
+                </button>
+                <div id="finalizeResult" class="mt-4 hidden"></div>
+            </div>
+
+            <!-- 로그 -->
+            <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm">
+                <h3 class="text-white mb-2">📊 서버 로그</h3>
+                <div id="serverLog" class="space-y-1 max-h-64 overflow-y-auto">
+                    <div>시스템 로그가 여기에 표시됩니다...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSid = null;
+        let currentRequestId = null;
+
+        // 사용자 데이터
+        const userA = {
+            name: '김철수',
+            rrn: '900101-1234567'
+        };
+
+        const userC = {
+            name: '이영희',
+            rrn: '920525-4567890'
+        };
+
+        function fillUserA() {
+            document.getElementById('name').value = userA.name;
+            document.getElementById('rrn').value = userA.rrn;
+        }
+
+        function fillUserC() {
+            document.getElementById('name').value = userC.name;
+            document.getElementById('rrn').value = userC.rrn;
+        }
+
+        function addLog(message, type = 'info') {
+            const logDiv = document.getElementById('serverLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-yellow-400';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = color;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // 1단계: 실명확인
+        document.getElementById('step1Form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                rrn: document.getElementById('rrn').value
+            };
+
+            addLog(`1단계 실명확인 시작: ${formData.name}`, 'info');
+
+            try {
+                const response = await fetch('/step1/realname', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('step1Result');
+
+                if (response.ok) {
+                    currentSid = result.sid;
+                    document.getElementById('sessionSid').textContent = currentSid;
+                    
+                    resultDiv.className = 'mt-4 p-4 bg-green-50 rounded-lg';
+                    resultDiv.innerHTML = `
+                        <div class="text-green-800">
+                            <p class="font-medium">✅ 1단계 실명확인 성공!</p>
+                            <p class="text-sm mt-1"><strong>SID:</strong> ${currentSid}</p>
+                            <p class="text-sm mt-1">개인정보는 서버 내부에서만 처리됩니다.</p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('step2Section').classList.remove('hidden');
+                    addLog(`1단계 성공: SID ${currentSid}`, 'success');
+                } else {
+                    resultDiv.className = 'mt-4 p-4 bg-red-50 rounded-lg';
+                    resultDiv.innerHTML = `
+                        <div class="text-red-800">
+                            <p class="font-medium">❌ 1단계 실명확인 실패!</p>
+                            <p class="text-sm mt-1">${result.error}</p>
+                        </div>
+                    `;
+                    addLog(`1단계 실패: ${result.error}`, 'error');
+                }
+
+                resultDiv.classList.remove('hidden');
+
+            } catch (error) {
+                addLog(`1단계 오류: ${error.message}`, 'error');
+            }
+        });
+
+        // 2단계: 외부 인증 시작
+        document.getElementById('startStep2').addEventListener('click', async function() {
+            if (!currentSid) {
+                addLog('SID가 없습니다. 1단계를 먼저 완료하세요.', 'error');
+                return;
+            }
+
+            addLog('2단계 외부 인증 초기화 시작', 'info');
+
+            try {
+                // 보안 강화: 1단계 사용자 정보만 사용
+                const response = await fetch('/step2/init', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        sid: currentSid
+                        // 클라이언트에서 사용자 정보 전송하지 않음 (보안 강화)
+                    })
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('step2Result');
+
+                if (response.ok) {
+                    currentRequestId = result.request_id;
+                    document.getElementById('requestId').textContent = currentRequestId;
+                    
+                    resultDiv.className = 'mt-4 p-4 bg-green-50 rounded-lg';
+                    resultDiv.innerHTML = `
+                        <div class="text-green-800">
+                            <p class="font-medium">✅ 2단계 인증 초기화 성공!</p>
+                            <p class="text-sm mt-1"><strong>Request ID:</strong> ${currentRequestId}</p>
+                            <p class="text-sm mt-1">Mock IDP 인증 페이지로 이동합니다...</p>
+                        </div>
+                    `;
+                    
+                    addLog(`2단계 초기화 성공: Request ID ${currentRequestId}`, 'success');
+                    
+                    // Mock IDP 페이지로 이동
+                    setTimeout(() => {
+                        window.open(`/mock_idp_auth?request_id=${currentRequestId}&state=${result.auth_url.split('state=')[1]}&nonce=${result.nonce}`, '_blank');
+                    }, 1000);
+                    
+                } else {
+                    resultDiv.className = 'mt-4 p-4 bg-red-50 rounded-lg';
+                    resultDiv.innerHTML = `
+                        <div class="text-red-800">
+                            <p class="font-medium">❌ 2단계 인증 초기화 실패!</p>
+                            <p class="text-sm mt-1">${result.error}</p>
+                        </div>
+                    `;
+                    addLog(`2단계 초기화 실패: ${result.error}`, 'error');
+                }
+
+                resultDiv.classList.remove('hidden');
+
+            } catch (error) {
+                addLog(`2단계 초기화 오류: ${error.message}`, 'error');
+            }
+        });
+
+        // 최종 완료
+        document.getElementById('finalizeBtn').addEventListener('click', async function() {
+            if (!currentSid) {
+                addLog('SID가 없습니다.', 'error');
+                return;
+            }
+
+            addLog('최종 인증 완료 시작', 'info');
+
+            try {
+                const response = await fetch('/finalize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sid: currentSid })
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('finalizeResult');
+
+                if (response.ok) {
+                    resultDiv.className = 'mt-4 p-4 bg-green-50 rounded-lg';
+                    resultDiv.innerHTML = `
+                        <div class="text-green-800">
+                            <p class="font-medium">🎉 최종 인증 완료!</p>
+                            <p class="text-sm mt-1">${result.message}</p>
+                            <p class="text-sm mt-1"><strong>JWT:</strong> ${result.jwt.substring(0, 50)}...</p>
+                            <p class="text-sm mt-2">개통 완료 페이지로 이동합니다...</p>
+                        </div>
+                    `;
+                    
+                    addLog('최종 인증 완료 성공!', 'success');
+                    
+                    // 개통 완료 페이지로 리다이렉트
+                    if (result.redirect_url) {
+                        setTimeout(() => {
+                            window.location.href = result.redirect_url;
+                        }, 2000);
+                    }
+                } else {
+                    resultDiv.className = 'mt-4 p-4 bg-red-50 rounded-lg';
+                    resultDiv.innerHTML = `
+                        <div class="text-red-800">
+                            <p class="font-medium">❌ 최종 인증 실패!</p>
+                            <p class="text-sm mt-1">${result.error}</p>
+                        </div>
+                    `;
+                    addLog(`최종 인증 실패: ${result.error}`, 'error');
+                }
+
+                resultDiv.classList.remove('hidden');
+
+            } catch (error) {
+                addLog(`최종 인증 오류: ${error.message}`, 'error');
+            }
+        });
+
+        // 팝업창으로부터 메시지 수신
+        window.addEventListener('message', function(event) {
+            console.log('팝업창으로부터 메시지 수신:', event.data);
+            
+            if (event.data.type === 'CONTRACT_COMPLETE') {
+                addLog('팝업창에서 개통 완료 메시지 수신!', 'success');
+                
+                // 2단계 완료 섹션 표시
+                document.getElementById('step2Section').classList.remove('hidden');
+                document.getElementById('step2Result').classList.add('hidden');
+                
+                // 최종 완료 섹션 표시
+                document.getElementById('finalizeSection').classList.remove('hidden');
+                
+                // 최종 완료 결과 표시
+                const resultDiv = document.getElementById('finalizeResult');
+                resultDiv.className = 'mt-4 p-4 bg-green-50 rounded-lg';
+                resultDiv.innerHTML = `
+                    <div class="text-green-800">
+                        <p class="font-medium">🎉 개통 완료!</p>
+                        <p class="text-sm mt-1">${event.data.data.message}</p>
+                        <p class="text-sm mt-1"><strong>JWT:</strong> ${event.data.data.jwt.substring(0, 50)}...</p>
+                        <p class="text-sm mt-2">개통 완료 페이지로 이동합니다...</p>
+                    </div>
+                `;
+                resultDiv.classList.remove('hidden');
+                
+                addLog('개통이 성공적으로 완료되었습니다!', 'success');
+                
+                // 개통 완료 페이지로 리다이렉트
+                if (event.data.data && event.data.data.redirect_url) {
+                    setTimeout(() => {
+                        window.location.href = event.data.data.redirect_url;
+                    }, 3000);
+                }
+                
+            } else if (event.data.type === 'CONTRACT_FAILURE') {
+                addLog(`팝업창에서 개통 실패 메시지 수신: ${event.data.error}`, 'error');
+                
+                // 2단계 결과 섹션에 실패 메시지 표시
+                const resultDiv = document.getElementById('step2Result');
+                resultDiv.className = 'mt-4 p-4 bg-red-50 rounded-lg';
+                resultDiv.innerHTML = `
+                    <div class="text-red-800">
+                        <p class="font-medium">❌ 개통 실패!</p>
+                        <p class="text-sm mt-1"><strong>오류:</strong> ${event.data.error}</p>
+                        <p class="text-sm mt-1">${event.data.message}</p>
+                        <p class="text-sm mt-2">인증에 실패하여 개통을 완료할 수 없습니다.</p>
+                    </div>
+                `;
+                resultDiv.classList.remove('hidden');
+                
+                addLog('개통 실패: 인증에 실패하여 개통을 완료할 수 없습니다.', 'error');
+                
+            } else if (event.data.type === 'AUTH_SUCCESS') {
+                addLog('팝업창에서 인증 성공 메시지 수신', 'success');
+                
+                // 2단계 완료 섹션 표시
+                document.getElementById('step2Section').classList.remove('hidden');
+                document.getElementById('step2Result').classList.add('hidden');
+                
+                // 최종 완료 섹션 표시
+                document.getElementById('finalizeSection').classList.remove('hidden');
+                
+                addLog('2단계 인증이 성공적으로 완료되었습니다!', 'success');
+                
+                // 개통 완료 페이지로 리다이렉트
+                if (event.data.data && event.data.data.redirect_url) {
+                    setTimeout(() => {
+                        window.location.href = event.data.data.redirect_url;
+                    }, 3000);
+                }
+            } else if (event.data.type === 'AUTH_FAILURE') {
+                addLog(`팝업창에서 인증 실패 메시지 수신: ${event.data.error}`, 'error');
+                
+                // 2단계 결과 섹션에 실패 메시지 표시
+                const resultDiv = document.getElementById('step2Result');
+                resultDiv.className = 'mt-4 p-4 bg-red-50 rounded-lg';
+                resultDiv.innerHTML = `
+                    <div class="text-red-800">
+                        <p class="font-medium">❌ 2단계 인증 실패!</p>
+                        <p class="text-sm mt-1"><strong>사용자 불일치 오류</strong></p>
+                        <p class="text-sm mt-1">${event.data.message}</p>
+                        <p class="text-sm mt-2">1단계와 2단계 인증자가 반드시 같아야 합니다.</p>
+                    </div>
+                `;
+                resultDiv.classList.remove('hidden');
+                
+                addLog('사용자 일치성 검증 실패: 1단계와 2단계 인증자가 다릅니다.', 'error');
+            }
+        });
+
+        // 페이지 로드 시 사용자 A로 자동 채우기
+        window.addEventListener('load', function() {
+            fillUserA();
+            addLog('보안 2단계 인증 시스템이 준비되었습니다.', 'info');
+        });
+    </script>
+</body>
+</html>

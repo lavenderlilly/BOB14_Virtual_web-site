@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴대폰 개통 완료 - BCS Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl w-full space-y-8">
+            <div>
+                <div class="flex items-center justify-center">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    🎉 {{ step1_data.name }}님의 휴대폰 개통 완료!
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    {% if data_mismatch %}
+                    파라미터 변조 취약점 시뮬레이션으로 {{ step1_data.name }}님 명의로 개통되었습니다
+                    {% else %}
+                    {{ step1_data.name }}님의 본인인증이 성공적으로 완료되어 휴대폰이 개통되었습니다
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="bg-white py-8 px-6 shadow rounded-lg">
+                {% if data_mismatch %}
+                <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                🚨 파라미터 변조 취약점 시뮬레이션 성공!
+                            </h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <p>1단계와 2단계 데이터 일치성 검증 없이 휴대폰 개통이 완료되었습니다.</p>
+                                <p class="mt-1">이는 <strong>실제 알뜰폰 개통 사이트</strong>에서 발견된 보안 취약점과 동일합니다!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-green-800">
+                                정상 개통 완료
+                            </h3>
+                            <div class="mt-2 text-sm text-green-700">
+                                <p>실명확인과 본인인증 정보가 일치하여 정상적으로 개통되었습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- 개통 정보 -->
+                <div class="bg-blue-50 border border-blue-200 rounded-md p-6 mb-6">
+                    <h3 class="text-lg font-medium text-blue-900 mb-4">📱 개통 정보</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-medium text-blue-800 mb-2">📋 개통자 정보 (1단계 실명확인)</h4>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-medium">이름:</span> <span class="text-blue-600 font-semibold">{{ step1_data.name }}</span></p>
+                                <p><span class="font-medium">주민등록번호:</span> {{ step1_data.resident_number }}</p>
+                                <p><span class="font-medium">연락처:</span> {{ step1_data.phone }}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-blue-800 mb-2">🔐 인증 정보 (2단계 본인인증)</h4>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-medium">인증기관:</span> {{ provider_info.name }}</p>
+                                <p><span class="font-medium">인증자:</span> {{ step2_data.name }}</p>
+                                <p><span class="font-medium">인증 연락처:</span> {{ step2_data.phone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 휴대폰 정보 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-md p-6 mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">📞 휴대폰 정보</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="w-16 h-24 bg-gray-800 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                                <div class="w-12 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded"></div>
+                            </div>
+                            <p class="text-sm font-medium">갤럭시 A15</p>
+                            <p class="text-xs text-gray-500">256GB</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-8 h-8 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium">개통 상태</p>
+                            <p class="text-xs text-green-600">활성화됨</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium">번호</p>
+                            <p class="text-xs text-blue-600">010-****-****</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if data_mismatch %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">
+                                ⚠️ 파라미터 변조 취약점 시뮬레이션 결과
+                            </h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p><strong>문제점:</strong> 1단계 성공 여부만 플래그로 저장하고, 2단계와 데이터 일치성 검증을 하지 않습니다.</p>
+                                <p class="mt-1"><strong>실제 영향:</strong> BurpSuite로 파라미터를 변조하여 타인 정보로 인증 성공할 수 있습니다.</p>
+                                <p class="mt-1"><strong>보안 대책:</strong> 1단계와 2단계 데이터 일치성 검증이 필요합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 보안뉴스 기사 참조 -->
+                <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">
+                                📰 실제 취약점 참조
+                            </h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p><strong>취약점 1:</strong> "1단계 성공 여부만 플래그로 저장하고, 그 결과값(이름·주민번호)이 2단계와 동일한지까지 강제 매칭하지 않음"</p>
+                                <p class="mt-1"><strong>취약점 2:</strong> "2단계 결과를 별도로 처리하여 파라미터 변조 가능"</p>
+                                <p class="mt-1"><strong>공격 방법:</strong> "공격자가 파라미터를 변조해 B의 정보를 입력하고, B의 인증수단(PASS 등)을 써서 인증에 성공할 수 있음"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <a href="/step1_verification" 
+                       class="flex-1 inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        다시 시도하기
+                    </a>
+                    <a href="/" 
+                       class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+                        홈으로 돌아가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

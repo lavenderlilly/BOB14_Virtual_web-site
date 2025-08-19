@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인증 완료 - BCS Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl w-full space-y-8">
+            <div>
+                <div class="flex items-center justify-center">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    인증 완료
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    본인인증이 성공적으로 완료되었습니다
+                </p>
+            </div>
+            
+            <div class="bg-white py-8 px-6 shadow rounded-lg">
+                {% if data_mismatch %}
+                <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                🚨 피해자 A 명의 대포폰 개통 해킹 성공!
+                            </h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <p>피해자 A의 실명확인과 해커의 본인인증이 연결되어 휴대폰 개통이 승인되었습니다.</p>
+                                <p class="mt-1">이는 실제 알뜰폰 사업자 해킹 사고와 동일한 취약점입니다!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-green-800">
+                                정상 인증
+                            </h3>
+                            <div class="mt-2 text-sm text-green-700">
+                                <p>1단계와 2단계의 개인정보가 일치하여 정상적으로 인증되었습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 1단계 인증 정보 -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                            <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-2">1</span>
+                            1단계 본인인증 정보
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">이름</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ step1_data.name }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">주민등록번호</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ step1_data.resident_number }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">휴대폰 번호</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ step1_data.phone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                                         <!-- 2단계 인증 정보 -->
+                     <div class="bg-gray-50 rounded-lg p-4">
+                         <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                             <span class="w-6 h-6 {{ provider_info.color }} text-white rounded-full flex items-center justify-center text-sm mr-2">{{ provider_info.logo }}</span>
+                             {{ provider_info.name }} 인증 정보
+                         </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">이름</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ step2_data.name }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">주민등록번호</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ step2_data.resident_number }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">휴대폰 번호</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ step2_data.phone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if data_mismatch %}
+                <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">
+                                실제 해킹 사고 분석
+                            </h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p><strong>해킹 과정:</strong></p>
+                                <ol class="mt-1 list-decimal list-inside space-y-1">
+                                    <li>해커가 피해자 A의 개인정보를 불법으로 획득</li>
+                                    <li>1단계 실명확인에서 피해자 A의 정보 사용</li>
+                                    <li>2단계 본인인증에서 해커 자신의 스마트폰으로 인증</li>
+                                    <li>팝업창을 조작하여 해커 정보로 인증 토큰 생성</li>
+                                    <li>조작된 데이터를 서버로 전송</li>
+                                    <li>시스템이 실명확인과 본인인증의 불일치를 감지하지 못함</li>
+                                    <li>피해자 A 명의로 휴대폰 개통 성공 (대포폰)</li>
+                                </ol>
+                                <p class="mt-2"><strong>해킹 방법:</strong> 팝업창 조작 + 해커 자신의 스마트폰 인증</p>
+                                <p class="mt-1"><strong>실제 피해:</strong> 피해자 A 명의의 대포폰이 범죄에 악용됨</p>
+                                <p class="mt-1"><strong>보안 대책:</strong> 실명확인과 본인인증 데이터 일치성 검증 필수</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <a href="/step1_verification" 
+                       class="flex-1 inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        다시 시도하기
+                    </a>
+                    <a href="/" 
+                       class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+                        홈으로 돌아가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
